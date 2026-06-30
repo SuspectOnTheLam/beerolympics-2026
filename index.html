@@ -182,8 +182,8 @@
   body.is-fullscreen .bt-figure{flex-direction:row;align-items:center;gap:clamp(8px,1vw,18px)}
   body.is-fullscreen .bt-total{font-size:clamp(30px,5.4vh,72px);line-height:.9;text-shadow:3px 3px 0 rgba(0,0,0,.35)}
   body.is-fullscreen .bt-labels{align-items:flex-start;gap:clamp(1px,.3vw,4px)}
-  body.is-fullscreen .bt-pts{font-size:clamp(6px,.72vw,10px);letter-spacing:2px;opacity:.85;margin:0;text-align:left}
-  body.is-fullscreen .bt-meta{font-size:clamp(7px,.82vw,12px);letter-spacing:1px;margin:0;text-align:left}
+  body.is-fullscreen .bt-pts{font-size:clamp(9px,1.3vh,15px);letter-spacing:2px;opacity:.9;margin:0;text-align:left}
+  body.is-fullscreen .bt-meta{font-size:clamp(8px,1.15vh,14px);letter-spacing:1px;margin:0;text-align:left}
   body.is-fullscreen .leadtag{margin:clamp(1px,.3vw,4px) 0 0;font-size:clamp(6px,.7vw,10px);padding:3px 10px}
   body.is-fullscreen .board-top .crown{font-size:clamp(30px,3.6vw,54px)}
   body.is-fullscreen .board-mvp{padding:clamp(3px,.4vw,7px) 12px;gap:clamp(6px,.8vw,14px)}
@@ -202,54 +202,82 @@
   body.is-fullscreen .trophy{font-size:clamp(10px,1.8vh,18px)}
   body.is-fullscreen .badge{font-size:clamp(6px,.7vw,10px);padding:3px 6px}
 
-  /* ── deer.supply ad (full-screen only) — fills the entire screen ── */
-  .ad{
-    position:fixed;inset:0;z-index:200;display:none;
-    flex-direction:column;align-items:center;justify-content:center;
-    gap:clamp(8px,1.3vh,18px);padding:4vh 8vw;
-    background:radial-gradient(ellipse at 50% 35%,#3d0000 0%,#110000 55%,#000 100%);
-    overflow:hidden;cursor:pointer;
-  }
-  .ad::before{
-    content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
-    background:repeating-linear-gradient(180deg,transparent 0,transparent 3px,rgba(0,0,0,.18) 3px,rgba(0,0,0,.18) 4px);
-  }
-  .ad::after{
-    content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
-    background:radial-gradient(ellipse at 50% 50%,transparent 40%,rgba(0,0,0,.45) 100%);
-  }
-  .ad.show{display:flex;animation:adIn .6s cubic-bezier(.22,1,.36,1)}
-  @keyframes adIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
-  .ad>*{position:relative;z-index:1}
-  .ad-tag{font-family:inherit;font-size:clamp(7px,.72vw,10px);letter-spacing:3px;
-    background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);
-    border:2px solid rgba(255,255,255,.18);padding:5px 14px}
-  .ad-deer{font-size:clamp(60px,10vw,130px);line-height:1;
-    filter:drop-shadow(0 0 20px rgba(255,80,80,.6));
-    animation:deerBounce .9s steps(2) infinite}
-  @keyframes deerBounce{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-18px) scale(1.06)}}
-  .ad-brand{font-size:clamp(32px,6.5vw,88px);color:var(--red);letter-spacing:2px;
-    text-shadow:4px 4px 0 #000,0 0 30px rgba(204,0,0,.7);
-    animation:brandPulse 1.8s ease-in-out infinite}
-  @keyframes brandPulse{0%,100%{text-shadow:4px 4px 0 #000,0 0 20px rgba(204,0,0,.5)}50%{text-shadow:4px 4px 0 #000,0 0 55px rgba(255,30,30,.9),0 0 90px rgba(255,0,0,.25)}}
-  .ad-headline{font-size:clamp(13px,2vw,28px);color:var(--white);line-height:1.75;text-align:center;
-    text-shadow:2px 2px 0 rgba(0,0,0,.9)}
-  .ad-sub{font-size:clamp(8px,.88vw,12px);color:rgba(255,255,255,.7);max-width:min(700px,80vw);
-    line-height:2.1;text-align:center}
-  .ad-points{list-style:none;display:flex;flex-wrap:wrap;gap:6px 24px;justify-content:center;
-    font-size:clamp(7px,.78vw,11px);color:rgba(255,255,255,.8)}
-  .ad-points li::before{content:'✓ ';color:#ff7777}
-  .ad-cta{background:var(--red);color:var(--white);border:5px solid var(--white);
-    padding:clamp(10px,1.3vh,18px) clamp(20px,3vw,46px);
-    font-size:clamp(13px,1.8vw,24px);letter-spacing:2px;
-    box-shadow:6px 6px 0 rgba(0,0,0,.6),0 0 30px rgba(200,0,0,.4);
-    animation:ctaGlow 2s ease-in-out infinite}
-  @keyframes ctaGlow{0%,100%{box-shadow:6px 6px 0 rgba(0,0,0,.6),0 0 20px rgba(200,0,0,.3)}50%{box-shadow:6px 6px 0 rgba(0,0,0,.6),0 0 55px rgba(255,0,0,.8),0 0 100px rgba(255,0,0,.2)}}
-  .ad-fine{font-size:clamp(5px,.52vw,7px);color:rgba(255,255,255,.28);max-width:min(680px,78vw);
-    line-height:1.85;text-align:center}
-  .ad-timer{font-size:clamp(9px,.98vw,13px);color:var(--gold);letter-spacing:3px;
-    animation:timerBlink 1s steps(2) infinite}
-  @keyframes timerBlink{0%,49%{opacity:1}50%,100%{opacity:.3}}
+  /* ── deer.supply — 8-bit VIDEO AD (TV / fullscreen only) ── */
+  @property --belly{syntax:'<length>';inherits:false;initial-value:0px}
+  .ad{position:fixed;inset:0;z-index:200;display:none;cursor:pointer;overflow:hidden;
+    background:radial-gradient(ellipse at 50% 42%,#13245a 0%,#0a1030 55%,#03030c 100%)}
+  .ad::before{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;
+    background:repeating-linear-gradient(180deg,transparent 0,transparent 2px,rgba(0,0,0,.22) 2px,rgba(0,0,0,.22) 4px)}
+  .ad::after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 50%,transparent 36%,rgba(0,0,0,.6) 100%);animation:crtFlicker 5s steps(2) infinite}
+  @keyframes crtFlicker{48%{opacity:1}50%{opacity:.86}52%{opacity:1}}
+  .ad.show{display:block;animation:adIn .45s steps(4)}
+  @keyframes adIn{from{opacity:0}to{opacity:1}}
+  .ad-tag{position:absolute;top:clamp(10px,2.2vh,24px);left:50%;transform:translateX(-50%);z-index:4;
+    font-family:inherit;font-size:clamp(7px,.8vw,11px);letter-spacing:4px;color:rgba(255,255,255,.45);
+    background:rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.2);padding:5px 16px}
+
+  /* stage + scenes (one shown at a time, sequenced like a video) */
+  .ad-screen{position:absolute;inset:0;z-index:1}
+  .adscene{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+    gap:clamp(10px,2.4vh,30px);padding:clamp(58px,9vh,108px) 6vw clamp(70px,11vh,120px);text-align:center}
+  .ad[data-scene="intro"] .sc-intro,
+  .ad[data-scene="hero"]  .sc-hero,
+  .ad[data-scene="crowd"] .sc-crowd,
+  .ad[data-scene="cta"]   .sc-cta{display:flex;animation:scenePop .45s cubic-bezier(.22,1,.36,1)}
+  @keyframes scenePop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+
+  /* pixel-art sprites (rendered from a char matrix by JS) */
+  .pix{display:grid;grid-template-columns:repeat(var(--cols),var(--px));grid-auto-rows:var(--px);image-rendering:pixelated}
+  .pix i{width:var(--px);height:var(--px);display:block}
+  .pix-deer{--px:clamp(7px,1.5vw,15px);filter:drop-shadow(4px 5px 0 rgba(0,0,0,.55))}
+  .pix-deer.bounce{animation:deerHop .7s steps(2) infinite}
+  @keyframes deerHop{50%{transform:translateY(calc(var(--px) * -1.3))}}
+  .pix-deer.small{--px:clamp(5px,1vw,10px)}
+
+  /* brand + copy */
+  .ad-brand{font-size:clamp(34px,7vw,92px);color:#ffd23b;letter-spacing:2px;
+    text-shadow:4px 4px 0 #000,0 0 26px rgba(255,180,0,.55);animation:brandPulse 1.5s steps(2) infinite}
+  @keyframes brandPulse{50%{text-shadow:4px 4px 0 #000,0 0 52px rgba(255,214,70,.95)}}
+  .ad-kicker{font-size:clamp(9px,1.35vw,17px);color:#7ad7ff;letter-spacing:3px;line-height:1.9}
+  .ad-cta{background:#ff2b2b;color:#fff;border:5px solid #fff;letter-spacing:2px;
+    padding:clamp(10px,1.7vh,18px) clamp(18px,3vw,44px);font-size:clamp(12px,1.8vw,24px);
+    box-shadow:6px 6px 0 rgba(0,0,0,.6);animation:ctaGlow 1.3s steps(2) infinite}
+  @keyframes ctaGlow{50%{box-shadow:6px 6px 0 rgba(0,0,0,.6),0 0 50px rgba(255,40,40,.9)}}
+
+  /* hero transformation scene */
+  .hero-readout{display:flex;gap:clamp(16px,4vw,64px);font-size:clamp(15px,2.6vw,36px);color:#fff;text-shadow:2px 2px 0 #000}
+  .hero-readout b{color:#ffd23b}
+  .hero-cap{font-size:clamp(9px,1.35vw,17px);color:#7ad7ff;letter-spacing:2px}
+  .ad-track{width:min(60vw,640px);height:clamp(12px,2.2vh,24px);background:#0a1430;border:3px solid #fff;overflow:hidden}
+  .ad-track-fill{height:100%;width:0;background:repeating-linear-gradient(90deg,#3bd16f 0,#3bd16f 10px,#2fae5b 10px,#2fae5b 14px)}
+
+  /* 8-bit person — blocky figure whose belly width animates (high BMI → healthy) */
+  .figure{display:flex;flex-direction:column;align-items:center;--u:clamp(5px,1vw,11px)}
+  .figure .f-head{width:calc(var(--u)*3);height:calc(var(--u)*3);background:#f0c89a;
+    box-shadow:inset calc(var(--u)*-0.8) 0 0 rgba(0,0,0,.16),inset 0 calc(var(--u)*-0.5) 0 rgba(0,0,0,.10)}
+  .figure .f-neck{width:var(--u);height:calc(var(--u)*.7);background:#e0b487}
+  .figure .f-torso{width:calc(var(--u)*2.4 + var(--belly));height:calc(var(--u)*3.6);background:#cc2222;
+    box-shadow:inset calc(var(--u)*-0.9) 0 0 rgba(0,0,0,.2),inset 0 calc(var(--u)*0.7) 0 rgba(255,255,255,.08)}
+  .figure .f-legs{display:flex;gap:var(--u)}
+  .figure .f-legs i{width:var(--u);height:calc(var(--u)*2.8);background:#26406e;display:block}
+  .hero-person{--u:clamp(9px,2.3vw,27px)}
+
+  /* crowd results scene */
+  .crowd-row{display:flex;align-items:flex-end;gap:clamp(10px,2.6vw,44px)}
+  .crowd-row .figure{--u:clamp(5px,1.15vw,14px)}
+  .crowd-row .figure.go{animation:slimDown var(--sd,5s) steps(12) forwards}
+  @keyframes slimDown{from{--belly:calc(var(--u)*1.7)}to{--belly:0px}}
+  .big-stat{font-size:clamp(20px,4.2vw,58px);color:#3bd16f;letter-spacing:1px;text-shadow:3px 3px 0 #000}
+  .big-stat b{color:#fff}
+  .crowd-cap{font-size:clamp(9px,1.25vw,16px);color:#7ad7ff;letter-spacing:2px}
+
+  /* fine print + skip timer */
+  .ad-fine{position:absolute;left:50%;transform:translateX(-50%);bottom:clamp(34px,6vh,66px);z-index:4;
+    width:min(88vw,940px);font-size:clamp(5px,.62vw,9px);color:rgba(255,255,255,.34);line-height:1.7;text-align:center}
+  .ad-timer{position:absolute;left:50%;transform:translateX(-50%);bottom:clamp(12px,2.4vh,28px);z-index:4;
+    font-size:clamp(9px,1.1vw,14px);color:#ffd23b;letter-spacing:2px;animation:timerBlink 1s steps(2) infinite}
+  @keyframes timerBlink{50%{opacity:.35}}
 
   /* ── animations & motion polish ── */
   .row{position:relative}
@@ -355,22 +383,44 @@
     </div>
   </div>
 
-  <!-- DEER.SUPPLY AD (full-screen only) -->
-  <div class="ad" id="adOverlay">
+  <!-- DEER.SUPPLY — 8-bit video ad (TV / fullscreen only) -->
+  <div class="ad" id="adOverlay" data-scene="intro">
     <div class="ad-tag">ADVERTISEMENT</div>
-    <div class="ad-deer">🦌</div>
-    <div class="ad-brand">deer.supply</div>
-    <div class="ad-headline">SHED THE WEIGHT.<br>KEEP THE CHEER. 🍺🍁</div>
-    <div class="ad-sub">Doctor-prescribed GLP-1 weight-loss medication, delivered discreetly to your door across Canada. No clinic line-ups. No judgment. Just results between Beerolympics.</div>
-    <ul class="ad-points">
-      <li>Online doctor visit</li>
-      <li>Meds shipped free</li>
-      <li>Licensed CDN pharmacy</li>
-      <li>Cancel anytime</li>
-    </ul>
-    <div class="ad-cta">START TODAY → deer.supply</div>
-    <div class="ad-fine">Prescription medication requires a medical assessment and is not suitable for everyone. Use only as directed by a licensed clinician. deer.supply is a fictional sponsor shown for this event display.</div>
-    <div class="ad-timer" id="adTimer">CLOSES IN 30S</div>
+    <div class="ad-screen" id="adScreen">
+
+      <!-- SCENE 1 · intro -->
+      <div class="adscene sc-intro">
+        <div class="pix pix-deer" id="pixDeer"></div>
+        <div class="ad-brand">deer.supply</div>
+        <div class="ad-kicker">RETA-DEER™ · TRIPLE-HORMONE WEIGHT LOSS</div>
+      </div>
+
+      <!-- SCENE 2 · hero transformation over 18 months -->
+      <div class="adscene sc-hero">
+        <div class="hero-readout"><span>BMI <b id="bmiNum">38</b></span><span>MONTH <b id="moNum">0</b> / 18</span></div>
+        <div id="heroPerson"></div>
+        <div class="ad-track"><div class="ad-track-fill" id="trackFill"></div></div>
+        <div class="hero-cap">18 MONTHS ON RETA-DEER™</div>
+      </div>
+
+      <!-- SCENE 3 · crowd results -->
+      <div class="adscene sc-crowd">
+        <div class="crowd-row" id="crowdRow"></div>
+        <div class="big-stat"><b id="lossNum">0</b>% BODY WEIGHT GONE*</div>
+        <div class="crowd-cap">*highest-dose retatrutide clinical results</div>
+      </div>
+
+      <!-- SCENE 4 · call to action -->
+      <div class="adscene sc-cta">
+        <div class="pix pix-deer small" id="pixDeerCta"></div>
+        <div class="ad-brand">deer.supply</div>
+        <div class="ad-cta">ASK YOUR DOCTOR ABOUT RETA-DEER™</div>
+        <div class="ad-kicker">SHED THE WEIGHT · KEEP THE CHEER 🍺🍁</div>
+      </div>
+
+    </div>
+    <div class="ad-fine">Dramatization based on published retatrutide clinical-trial data (a GLP-1 / GIP / glucagon receptor agonist; highest-dose participants lost roughly a quarter of their body weight over ~72 weeks). deer.supply &amp; RETA-DEER™ are a FICTIONAL sponsor shown purely for entertainment at this backyard event — not a real product and not medical advice. Prescription weight-loss medication requires assessment by a licensed clinician; individual results vary.</div>
+    <div class="ad-timer" id="adTimer">CLOSES IN 30S · TAP OR PRESS SPACE TO SKIP</div>
   </div>
 
 <script>
@@ -642,19 +692,148 @@
   let adInterval=null, adTimeout=null, adTick=null;
   const adEl=()=>document.getElementById('adOverlay');
   const adShowing=()=>adEl().classList.contains('show');
+  // ── pixel-art sprite renderer: map = array of equal-length strings, pal = {char:color} ──
+  function buildSprite(host,map,pal){
+    if(!host) return;
+    host.style.setProperty('--cols',map[0].length);
+    let html='';
+    for(const row of map) for(const ch of row)
+      html += (ch===' '||ch==='.') ? '<i></i>' : '<i style="background:'+(pal[ch]||'#000')+'"></i>';
+    host.innerHTML=html;
+  }
+  const DEER_PAL={B:'#7a4a22',L:'#a06d36',T:'#c99a57',K:'#120a04',N:'#2c1a0c',W:'#f3e7d2'};
+  const DEER=[
+    "....T.....T....",
+    "...T.T...T.T...",
+    "....TT...TT....",
+    ".....T...T.....",
+    ".........BBB...",
+    "........BBBBB..",
+    "........BLLKB..",
+    "........BLLNN..",
+    "...BBBBBBBBB...",
+    ".WBBBBBBBBBB...",
+    ".BBBBBBBBBBB...",
+    ".BBBBBBBBBB....",
+    ".BB..BB.BB.B...",
+    ".B...B..B..B...",
+    ".N...N..N..N...",
+  ];
+  function makeFigure(){
+    const f=document.createElement('div'); f.className='figure';
+    f.innerHTML='<div class="f-head"></div><div class="f-neck"></div><div class="f-torso"></div><div class="f-legs"><i></i><i></i></div>';
+    return f;
+  }
+  let adBuilt=false, heroFig=null, crowdFigs=[];
+  function buildAd(){
+    if(adBuilt) return; adBuilt=true;
+    buildSprite(document.getElementById('pixDeer'),DEER,DEER_PAL);
+    buildSprite(document.getElementById('pixDeerCta'),DEER,DEER_PAL);
+    heroFig=makeFigure(); heroFig.classList.add('hero-person');
+    document.getElementById('heroPerson').appendChild(heroFig);
+    const crowd=document.getElementById('crowdRow'); crowd.innerHTML=''; crowdFigs=[];
+    for(let i=0;i<5;i++){ const g=makeFigure(); crowd.appendChild(g); crowdFigs.push(g); }
+  }
+
+  // ── 30s scene timeline (plays like a video segment) ──
+  const SCENES=[['intro',0],['hero',4.5],['crowd',15],['cta',23.5]];
+  let adRAF=null, adStart=0;
+  function onSceneEnter(scene){
+    if(scene==='intro') document.getElementById('pixDeer').classList.add('bounce');
+    if(scene==='hero') heroFig.style.setProperty('--belly','48px');
+    if(scene==='crowd') crowdFigs.forEach((g,i)=>{ g.classList.remove('go'); void g.offsetWidth;
+      g.style.setProperty('--sd','5s'); g.style.animationDelay=(i*0.45)+'s'; g.classList.add('go'); });
+  }
+  function adFrame(now){
+    if(!adShowing()) return;
+    const t=(now-adStart)/1000;
+    let scene='intro'; for(const [n,st] of SCENES) if(t>=st) scene=n;
+    const ad=adEl();
+    if(ad.dataset.scene!==scene){ ad.dataset.scene=scene; onSceneEnter(scene); }
+    if(scene==='hero'){
+      const k=Math.min(1,Math.max(0,(t-4.5)/9.5));     // ramp over the hero window
+      document.getElementById('bmiNum').textContent=Math.round(38-14*k);   // 38 → 24
+      document.getElementById('moNum').textContent=Math.round(18*k);       // 0 → 18 months
+      document.getElementById('trackFill').style.width=(k*100)+'%';
+      heroFig.style.setProperty('--belly',(48*(1-k))+'px');
+    }else if(scene==='crowd'){
+      const k=Math.min(1,Math.max(0,(t-15)/6.5));
+      document.getElementById('lossNum').textContent=Math.round(24*k);     // 0 → 24%
+    }
+    if(t<31) adRAF=requestAnimationFrame(adFrame);
+  }
+
   function showAd(){
-    const o=adEl(); o.classList.add('show');
+    buildAd();
+    const o=adEl(); o.dataset.scene='intro'; o.classList.add('show');
+    document.getElementById('pixDeer').classList.add('bounce');
+    adStart=performance.now();
+    cancelAnimationFrame(adRAF); adRAF=requestAnimationFrame(adFrame);
+    startMusic();
     let left=AD_DUR/1000; const t=document.getElementById('adTimer');
     const tick=()=>{ t.textContent='CLOSES IN '+Math.max(0,left)+'S · TAP OR PRESS SPACE TO SKIP'; };
-    tick();
-    clearInterval(adTick);
+    tick(); clearInterval(adTick);
     adTick=setInterval(()=>{ left--; tick(); if(left<=0)clearInterval(adTick); },1000);
     clearTimeout(adTimeout); adTimeout=setTimeout(hideAd,AD_DUR);
   }
-  function hideAd(){ adEl().classList.remove('show'); clearTimeout(adTimeout); clearInterval(adTick); if(window.__reloadPending) location.reload(); }
+  function hideAd(){
+    adEl().classList.remove('show'); clearTimeout(adTimeout); clearInterval(adTick);
+    cancelAnimationFrame(adRAF); stopMusic();
+    if(window.__reloadPending) location.reload();
+  }
   // click / tap anywhere on the ad, or press space, to skip it
   adEl().addEventListener('click',()=>{ if(adShowing()) hideAd(); });
   document.addEventListener('keydown',e=>{ if(adShowing() && (e.code==='Space'||e.key===' ')){ e.preventDefault(); hideAd(); } });
+
+  // ── 8-bit chiptune soundtrack (Web Audio) — upbeat, plays during the ad ──
+  let actx=null, masterGain=null, musicOn=false, schedTimer=null, nextNote=0, stepN=0;
+  const STEP=0.15;                       // 8th-note length (~100 BPM feel)
+  const mfreq=m=>440*Math.pow(2,(m-69)/12);
+  //                bars in C major — bright & bouncy
+  const LEAD=[72,76,79,76, 77,81,79,77, 74,77,81,79, 79,83,84,81,
+              72,76,79,76, 77,81,79,84, 83,79,76,79, 72,67,72,null];
+  const BASS=[48,48,55,55, 53,53,52,52, 50,50,57,57, 55,55,55,55,
+              48,48,55,55, 53,53,52,52, 50,50,57,57, 55,53,48,48];
+  function audioCtx(){
+    if(actx===null){ try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ actx=false; } }
+    return actx||null;
+  }
+  let noiseBuf=null;
+  function getNoise(c){
+    if(!noiseBuf){ noiseBuf=c.createBuffer(1,c.sampleRate*0.2,c.sampleRate);
+      const d=noiseBuf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; }
+    return noiseBuf;
+  }
+  function tone(freq,start,dur,type,vol){
+    const c=actx; const o=c.createOscillator(), g=c.createGain();
+    o.type=type; o.frequency.value=freq;
+    g.gain.setValueAtTime(0.0001,start); g.gain.linearRampToValueAtTime(vol,start+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001,start+dur);
+    o.connect(g).connect(masterGain); o.start(start); o.stop(start+dur+0.02);
+  }
+  function hat(start){
+    const c=actx; const s=c.createBufferSource(), g=c.createGain();
+    s.buffer=getNoise(c); g.gain.setValueAtTime(0.05,start); g.gain.exponentialRampToValueAtTime(0.0001,start+0.04);
+    s.connect(g).connect(masterGain); s.start(start); s.stop(start+0.05);
+  }
+  function scheduler(){
+    const c=actx; if(!c) return;
+    while(nextNote < c.currentTime + 0.12){
+      const i=stepN%LEAD.length;
+      if(LEAD[i]!=null) tone(mfreq(LEAD[i]),nextNote,STEP*0.9,'square',0.14);
+      if(BASS[i]!=null) tone(mfreq(BASS[i]-12),nextNote,STEP*0.95,'triangle',0.22);
+      if(i%2===0) hat(nextNote);
+      nextNote+=STEP; stepN++;
+    }
+  }
+  function startMusic(){
+    const c=audioCtx(); if(!c) return;
+    if(c.state==='suspended') c.resume().catch(()=>{});
+    if(!masterGain){ masterGain=c.createGain(); masterGain.gain.value=0.16; masterGain.connect(c.destination); }
+    if(musicOn) return; musicOn=true; stepN=0; nextNote=c.currentTime+0.08;
+    clearInterval(schedTimer); schedTimer=setInterval(scheduler,25);
+  }
+  function stopMusic(){ musicOn=false; clearInterval(schedTimer); schedTimer=null; }
   function startAds(){ stopAds(); adInterval=setInterval(showAd,AD_EVERY); }   // every 5 min while full-screen
   function stopAds(){ clearInterval(adInterval); adInterval=null; hideAd(); }
 
@@ -671,6 +850,7 @@
   }
   document.getElementById('fsBtn').addEventListener('click',()=>{
     document.documentElement.requestFullscreen?.().catch(()=>{});  // best-effort true fullscreen
+    const c=audioCtx(); if(c&&c.state==='suspended') c.resume().catch(()=>{});  // unlock audio for the ad
     setTvMode(true);
   });
   // if the browser leaves real fullscreen, drop TV mode too
