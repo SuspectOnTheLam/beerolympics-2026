@@ -75,12 +75,13 @@
 
   /* ── header ── */
   .topbar{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:clamp(6px,1vh,12px)}
-  .titles{display:flex;flex-direction:column;align-items:center;gap:clamp(6px,1vh,12px);padding:0 clamp(40px,5vw,72px)}
+  .titles{display:flex;flex-direction:column;align-items:center;gap:clamp(6px,1vh,12px);padding:0 clamp(46px,7vw,104px)}
   .titles h1{font-size:clamp(15px,2.9vw,38px);color:var(--title-col);text-shadow:2px 2px 0 var(--title-sh);letter-spacing:1px;line-height:1.25}
   .titles .sub{font-size:clamp(8px,1.05vw,13px);color:var(--on-bg);opacity:.75;letter-spacing:2px}
-  .fsbtn{position:absolute;top:0;right:0;display:flex;align-items:center;justify-content:center;width:clamp(34px,3vw,44px);height:clamp(34px,3vw,44px);font-family:inherit;font-size:clamp(13px,1.3vw,18px);line-height:1;cursor:pointer;color:var(--white);background:var(--red);border:3px solid var(--dark);box-shadow:3px 3px 0 rgba(0,0,0,.3)}
-  .fsbtn:hover{background:var(--red-d)}
-  .fsbtn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(0,0,0,.3)}
+  .toolbtns{position:absolute;top:0;right:0;display:flex;gap:clamp(6px,.7vw,10px);z-index:6}
+  .iconbtn{display:flex;align-items:center;justify-content:center;width:clamp(34px,3vw,44px);height:clamp(34px,3vw,44px);font-family:inherit;font-size:clamp(13px,1.3vw,18px);line-height:1;cursor:pointer;color:var(--white);background:var(--red);border:3px solid var(--dark);box-shadow:3px 3px 0 rgba(0,0,0,.3)}
+  .iconbtn:hover{background:var(--red-d)}
+  .iconbtn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(0,0,0,.3)}
   /* status rides on the water at the bottom of the scene (drawn before the canoe,
      so the boat sails over it); no z-index → relies on DOM order to stay under the boat */
   .status{position:absolute;left:50%;transform:translateX(-50%);bottom:clamp(22px,3vh,36px);
@@ -159,14 +160,14 @@
   @media (max-width:780px){
     .boards{grid-template-columns:1fr}
     .board{min-height:52vh}
-    .fsbtn{display:none}
+    .toolbtns{display:none}
   }
 
   /* ── fullscreen TV optimizations — fill the screen, keep the boat, big readable scores ── */
   body.is-fullscreen{overflow:hidden;--boat-h:clamp(46px,4.8vw,82px);--boat-bottom:clamp(12px,1.1vw,20px);--lane:clamp(64px,6.4vw,118px)}
   body.is-fullscreen .frame{border-width:clamp(6px,.6vw,10px)}
-  body.is-fullscreen .fsbtn{opacity:.32;transition:opacity .2s}
-  body.is-fullscreen .fsbtn:hover{opacity:1}
+  body.is-fullscreen .toolbtns{opacity:.32;transition:opacity .2s}
+  body.is-fullscreen .toolbtns:hover{opacity:1}
   body.is-fullscreen .app{height:100vh;gap:clamp(5px,.7vw,10px);overflow:hidden;
     padding:clamp(16px,1.5vw,26px) clamp(14px,1.6vw,30px) var(--lane)}
   body.is-fullscreen .topbar{flex-shrink:0}
@@ -333,7 +334,10 @@
   <div class="app">
     <!-- HEADER -->
     <div class="topbar">
-      <button class="fsbtn" id="fsBtn" title="Full screen" aria-label="Full screen">⛶</button>
+      <div class="toolbtns">
+        <button class="iconbtn adbtn" id="adBtn" title="Play ad now" aria-label="Play ad now">▶</button>
+        <button class="iconbtn fsbtn" id="fsBtn" title="Full screen" aria-label="Full screen">⛶</button>
+      </div>
       <div class="titles">
         <h1>2026 CANADA DAY BEEROLYMPICS</h1>
         <div class="sub">🍁 LIVE TEAM LEADERBOARD 🍁</div>
@@ -863,6 +867,11 @@
     }else{
       goFullscreen(); setTvMode(true);
     }
+  });
+  // play the ad on demand (click is a gesture, so audio unlocks for it)
+  document.getElementById('adBtn').addEventListener('click',()=>{
+    const c=audioCtx(); if(c&&c.state==='suspended') c.resume().catch(()=>{});
+    showAd();
   });
 
   // only drop TV mode when REAL fullscreen that we entered is exited (a stray event at load
