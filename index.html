@@ -196,7 +196,7 @@
     flex-direction:column;align-items:center;justify-content:center;
     gap:clamp(8px,1.3vh,18px);padding:4vh 8vw;
     background:radial-gradient(ellipse at 50% 35%,#3d0000 0%,#110000 55%,#000 100%);
-    overflow:hidden;
+    overflow:hidden;cursor:pointer;
   }
   .ad::before{
     content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
@@ -579,15 +579,20 @@
   const AD_EVERY=5*60*1000, AD_DUR=30*1000;
   let adInterval=null, adTimeout=null, adTick=null;
   const adEl=()=>document.getElementById('adOverlay');
+  const adShowing=()=>adEl().classList.contains('show');
   function showAd(){
     const o=adEl(); o.classList.add('show');
     let left=AD_DUR/1000; const t=document.getElementById('adTimer');
-    t.textContent='CLOSES IN '+left+'S';
+    const tick=()=>{ t.textContent='CLOSES IN '+Math.max(0,left)+'S · TAP OR PRESS SPACE TO SKIP'; };
+    tick();
     clearInterval(adTick);
-    adTick=setInterval(()=>{ left--; t.textContent='CLOSES IN '+Math.max(0,left)+'S'; if(left<=0)clearInterval(adTick); },1000);
+    adTick=setInterval(()=>{ left--; tick(); if(left<=0)clearInterval(adTick); },1000);
     clearTimeout(adTimeout); adTimeout=setTimeout(hideAd,AD_DUR);
   }
   function hideAd(){ adEl().classList.remove('show'); clearTimeout(adTimeout); clearInterval(adTick); }
+  // click / tap anywhere on the ad, or press space, to skip it
+  adEl().addEventListener('click',()=>{ if(adShowing()) hideAd(); });
+  document.addEventListener('keydown',e=>{ if(adShowing() && (e.code==='Space'||e.key===' ')){ e.preventDefault(); hideAd(); } });
   function startAds(){ stopAds(); adInterval=setInterval(showAd,AD_EVERY); }   // every 5 min while full-screen
   function stopAds(){ clearInterval(adInterval); adInterval=null; hideAd(); }
 
