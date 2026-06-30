@@ -149,6 +149,8 @@ window.addEventListener('resize',scaleStage);
 const API_URL  = 'https://script.google.com/macros/s/AKfycbzprLfwc4BJmYeu5U0vWdyu4xKVOTztibpGEqD9wShmVA1SthYsLCJC2kQOh1MyZ1B0/exec';
 const REFRESH_MS = 30000;
 
+const BONUS_CSV_URL = 'https://docs.google.com/spreadsheets/d/10ggx9WjHPnFeTcFncbyJL3tdeMH61cz6vq_4Yea--sA/gviz/tq?tqx=out:csv&headers=0&gid=0';
+
 function setStatus(state,text) {
   document.getElementById('statusDot').className='dot'+(state!=='ok'?' '+state:'');
   document.getElementById('statusText').textContent=text;
@@ -196,11 +198,78 @@ function buildList(id, players) {
     const row = document.createElement('div');
     row.className = 'player-row';
     row.innerHTML = `
-      <span class="p-rank">${i+2}.</span>
+      <span class="p-rank">${i+1}.</span>
       <span class="p-name">${p.name.toUpperCase()}</span>
       <span class="p-pts">${p.pts}</span>`;
     c.appendChild(row);
   });
+}
+
+function normName(n) {
+  return String(n == null ? '' : n).trim().replace(/\s+/g, ' ').toUpperCase();
+}
+
+function parseCsvLine(line) {
+  const out = []; let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQ) {
+      if (ch === '"') { if (line[i+1] === '"') { cur += '"'; i++; } else inQ = false; }
+      else cur += ch;
+    } else if (ch === '"') inQ = true;
+    else if (ch === ',') { out.push(cur); cur = ''; }
+    else cur += ch;
+  }
+  out.push(cur);
+  return out;
+}
+
+function parseBonusCsv(text) {
+  const map = {};
+  String(text).split(/\r?\n/).forEach(line => {
+    if (!line.trim()) return;
+    const cols = parseCsvLine(line);
+    const name = normName(cols[0]);
+    const num  = parseFloat(String(cols[1]).replace(/[^0-9.\-]/g, ''));
+    if (!name || !isFinite(num)) return;
+    map[name] = (map[name] || 0) + num;
+  });
+  return map;
+}
+
+function addBonus(ptsValue, bonus) {
+  const str = String(ptsValue == null ? '' : ptsValue);
+  const m = str.match(/-?\d+(\.\d+)?/);
+  if (!m) return str;
+  const sum = parseFloat(m[0]) + bonus;
+  return str.replace(m[0], String(sum));
+}
+
+let bonusMap = {};
+
+async function loadBonus() {
+  if (!BONUS_CSV_URL) { bonusMap = {}; return; }
+  try {
+    const res = await fetch(BONUS_CSV_URL, { redirect: 'follow' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    bonusMap = parseBonusCsv(await res.text());
+  } catch (e) {
+    console.warn('Bonus sheet unavailable — showing main scores only:', e);
+    bonusMap = {};
+  }
+}
+
+function applyBonuses(d, map) {
+  if (!map || !Object.keys(map).length) return;
+  const bump = (entry) => {
+    if (!entry || entry.name == null) return;
+    const add = map[normName(entry.name)];
+    if (isFinite(add)) entry.pts = addBonus(entry.pts, add);
+  };
+  bump(d.redMvp);
+  bump(d.whiteMvp);
+  (d.redPlayers   || []).forEach(bump);
+  (d.whitePlayers || []).forEach(bump);
 }
 
 // ── FETCH ──
@@ -215,6 +284,9 @@ async function refresh() {
     // Validate we got the fields we expect
     if (!data.winnerName || !data.redMvp || !data.whiteMvp)
       throw new Error('Missing fields — redeploy the Apps Script');
+
+    try { await loadBonus(); applyBonuses(data, bonusMap); }
+    catch (e) { console.warn('Bonus overlay skipped:', e); }
 
     render(data);
     const t = new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
