@@ -167,13 +167,16 @@
   body.is-fullscreen .leadbar{flex-shrink:0;padding:clamp(6px,1vh,12px) 14px;font-size:clamp(10px,1.3vw,18px)}
   body.is-fullscreen .boards{flex:1;min-height:0}
   body.is-fullscreen .board{overflow:hidden}
-  body.is-fullscreen .board-top{padding:clamp(4px,.55vw,9px) 12px;gap:0}
-  body.is-fullscreen .bt-name{font-size:clamp(11px,1.2vw,18px)}
-  body.is-fullscreen .bt-total{font-size:clamp(24px,2.7vw,42px);text-shadow:2px 2px 0 rgba(0,0,0,.35)}
-  body.is-fullscreen .bt-pts{font-size:clamp(5px,.55vw,7px);margin-top:-1px}
-  body.is-fullscreen .bt-meta{font-size:clamp(5px,.58vw,8px);margin-top:1px}
-  body.is-fullscreen .leadtag{margin-top:3px;font-size:clamp(5px,.58vw,8px);padding:2px 7px}
-  body.is-fullscreen .board-top .crown{font-size:clamp(30px,3.6vw,52px)}
+  /* fullscreen header = horizontal scoreboard band: NAME on top, then a big total
+     flanked by the meta inline — uses the wide whitespace, lets the number breathe */
+  body.is-fullscreen .board-top{flex-flow:row wrap;align-items:center;justify-content:center;
+    column-gap:clamp(8px,1.1vw,22px);row-gap:0;padding:clamp(6px,.9vw,16px) clamp(44px,5vw,84px)}
+  body.is-fullscreen .bt-name{flex-basis:100%;text-align:center;order:0;font-size:clamp(13px,1.5vw,24px);letter-spacing:2px}
+  body.is-fullscreen .bt-total{order:1;font-size:clamp(34px,4.2vw,72px);line-height:.95;text-shadow:3px 3px 0 rgba(0,0,0,.35)}
+  body.is-fullscreen .bt-pts{order:2;font-size:clamp(6px,.7vw,10px);margin:0;letter-spacing:2px}
+  body.is-fullscreen .bt-meta{order:3;font-size:clamp(6px,.75vw,11px);margin:0;letter-spacing:1px}
+  body.is-fullscreen .leadtag{order:4;margin:0;font-size:clamp(6px,.7vw,10px);padding:3px 9px}
+  body.is-fullscreen .board-top .crown{font-size:clamp(32px,4vw,60px)}
   body.is-fullscreen .board-mvp{padding:clamp(3px,.4vw,7px) 12px;gap:clamp(6px,.8vw,14px)}
   body.is-fullscreen .board-mvp .bm-lbl{font-size:clamp(6px,.72vw,10px)}
   body.is-fullscreen .board-mvp .bm-name{font-size:clamp(10px,1.05vw,15px)}
@@ -406,6 +409,23 @@
       .sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name));
   }
 
+  // ── TEAM TOTALS come DIRECTLY from the Google Sheet (winnerPts/loserPts) ──
+  // A team can earn points without crediting any individual player, so the sheet's
+  // team number can be GREATER than the sum of player scores. The winner/loser
+  // fields are mapped to red/white by which team name contains "red"/"white".
+  // Player-score sums are used only as a fallback when the sheet omits a number.
+  function sheetTeamTotals(data,sumRed,sumWhite){
+    const wName=String(data&&data.winnerName!=null?data.winnerName:'').toLowerCase();
+    const lName=String(data&&data.loserName !=null?data.loserName :'').toLowerCase();
+    const has=v=>v!=null&&String(v).trim()!=='';
+    const wPts=has(data&&data.winnerPts)?num(data.winnerPts):null;
+    const lPts=has(data&&data.loserPts )?num(data.loserPts ):null;
+    let red=null, white=null;
+    if(wName.includes('red')||lName.includes('white')){ red=wPts; white=lPts; }
+    else if(wName.includes('white')||lName.includes('red')){ white=wPts; red=lPts; }
+    return { red: red!=null?red:sumRed, white: white!=null?white:sumWhite };
+  }
+
   // remembered state between refreshes (for change/rank animations)
   let prevState={red:null,white:null}, prevLeader=null;
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -525,13 +545,15 @@
     const red   = teamPlayers(data.redPlayers,'red');
     const white = teamPlayers(data.whitePlayers,'white');
     const sum = arr => arr.reduce((t,p)=>t+p.score,0);
-    const redTotal=sum(red), whiteTotal=sum(white);
+    // team totals are the sheet's authoritative numbers (fallback: sum of players)
+    const totals = sheetTeamTotals(data,sum(red),sum(white));
+    const redTotal=totals.red, whiteTotal=totals.white;
 
     renderTeam(red,redTotal,{team:'red',label:'RED',totalId:'redTotal',metaId:'redMeta',mvpId:'mvpRed',rowsId:'redRows'},prevState.red);
     renderTeam(white,whiteTotal,{team:'white',label:'WHITE',totalId:'whiteTotal',metaId:'whiteMeta',mvpId:'mvpWhite',rowsId:'whiteRows'},prevState.white);
     prevState.red=snapshot(red); prevState.white=snapshot(white);
 
-    // ── who's winning (sum of player scores) ──
+    // ── who's winning (team totals from the sheet) ──
     const boardRed=document.getElementById('boardRed'), boardWhite=document.getElementById('boardWhite');
     const leadBar=document.getElementById('leadBar');
     boardRed.classList.remove('is-leading'); boardWhite.classList.remove('is-leading');

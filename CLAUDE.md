@@ -38,9 +38,13 @@ The board is a **read-only view of a Google Sheet** via a Google Apps Script web
 which `team` they're on** — read from the API's `redPlayers[]` and `whitePlayers[]`
 arrays (each entry `{name, pts}`).
 
-- **Team totals are computed by SUMMING player scores** in `render()`. The sheet's
-  pre-computed `winnerName`/`winnerPts`/`loserPts` fields are intentionally **ignored**
-  (they were unreliable).
+- **Team totals come DIRECTLY from the Google Sheet** — the `winnerPts`/`loserPts`
+  fields, mapped to red/white by which of `winnerName`/`loserName` contains
+  "red"/"white" (see `sheetTeamTotals()`). This is deliberate: **a team can earn
+  points without crediting any individual player**, so the sheet's team number can be
+  *greater* than the sum of player scores, and we respect the sheet as authoritative.
+  Summing player scores is only a **fallback** when the sheet omits a team number.
+  (Player rows and the per-team MVP still use individual player scores.)
 - An optional **bonus CSV** (`BONUS_CSV_URL`, a published-sheet `gviz` CSV) can add
   points to individual players by normalized name. It degrades gracefully — if the
   sheet is unreachable, base scores are shown.
