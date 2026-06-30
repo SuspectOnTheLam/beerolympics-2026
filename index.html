@@ -39,6 +39,8 @@
   body.theme-tie{--page-bg:#f2c200;--frame-col:var(--dark);--title-col:var(--dark);--title-sh:rgba(255,255,255,.55);--on-bg:var(--dark);--muted:rgba(0,0,0,.62)}
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   html{height:100%}
+  /* hide the mouse cursor after 30s idle (TV/kiosk friendly) */
+  body.cursor-hidden, body.cursor-hidden *{cursor:none!important}
   body{
     position:relative;min-height:100vh;
     font-family:'Press Start 2P','Courier New',monospace;
@@ -163,7 +165,8 @@
   /* ── fullscreen TV optimizations — fill the screen, keep the boat, big readable scores ── */
   body.is-fullscreen{overflow:hidden;--boat-h:clamp(46px,4.8vw,82px);--boat-bottom:clamp(12px,1.1vw,20px);--lane:clamp(64px,6.4vw,118px)}
   body.is-fullscreen .frame{border-width:clamp(6px,.6vw,10px)}
-  body.is-fullscreen .fsbtn{display:none}
+  body.is-fullscreen .fsbtn{opacity:.32;transition:opacity .2s}
+  body.is-fullscreen .fsbtn:hover{opacity:1}
   body.is-fullscreen .app{height:100vh;gap:clamp(5px,.7vw,10px);overflow:hidden;
     padding:clamp(16px,1.5vw,26px) clamp(14px,1.6vw,30px) var(--lane)}
   body.is-fullscreen .topbar{flex-shrink:0}
@@ -834,33 +837,73 @@
     clearInterval(schedTimer); schedTimer=setInterval(scheduler,25);
   }
   function stopMusic(){ musicOn=false; clearInterval(schedTimer); schedTimer=null; }
-  function startAds(){ stopAds(); adInterval=setInterval(showAd,AD_EVERY); }   // every 5 min while full-screen
+  function startAds(){ stopAds(); adInterval=setInterval(showAd,AD_EVERY); }   // an ad every 5 min
   function stopAds(){ clearInterval(adInterval); adInterval=null; hideAd(); }
 
-  // ── TV mode (the dense fullscreen layout) ──
-  // Decoupled from the browser Fullscreen API so it SURVIVES a reload: a reload drops
-  // real fullscreen (and browsers won't let us re-enter it without a user gesture), but
-  // we persist TV mode in localStorage and re-apply the layout on load. For an always-on
-  // TV, run the browser in kiosk / F11 OS-fullscreen — a reload won't exit that, so the
-  // window stays fullscreen while the auto-reload picks up new deploys.
+  // The ad plays on DESKTOP regardless of fullscreen / TV mode (skipped on phone-width layouts).
+  const adsAllowed = ()=> window.matchMedia('(min-width:781px)').matches;
+  function syncAds(){ if(adsAllowed()){ if(!adInterval) startAds(); } else stopAds(); }
+
+  // ── TV mode = the dense fullscreen LAYOUT, decoupled from the browser Fullscreen API so it
+  // survives a reload. Persisted in localStorage; the ad scheduler runs independently. ──
   function setTvMode(on){
     document.body.classList.toggle('is-fullscreen',on);
-    if(on) startAds(); else stopAds();
     try{ on ? localStorage.setItem('bo_tv','1') : localStorage.removeItem('bo_tv'); }catch(e){}
   }
+  function goFullscreen(){
+    document.documentElement.requestFullscreen?.().catch(()=>{});             // best-effort real fullscreen
+    const c=audioCtx(); if(c&&c.state==='suspended') c.resume().catch(()=>{}); // unlock audio for the ad
+  }
+  // the corner button TOGGLES in/out of TV mode + real fullscreen (it stays visible in both)
   document.getElementById('fsBtn').addEventListener('click',()=>{
-    document.documentElement.requestFullscreen?.().catch(()=>{});  // best-effort true fullscreen
-    const c=audioCtx(); if(c&&c.state==='suspended') c.resume().catch(()=>{});  // unlock audio for the ad
-    setTvMode(true);
+    if(document.body.classList.contains('is-fullscreen')){
+      if(document.fullscreenElement) document.exitFullscreen?.();
+      setTvMode(false);
+    }else{
+      goFullscreen(); setTvMode(true);
+    }
   });
-  // if the browser leaves real fullscreen, drop TV mode too
-  document.addEventListener('fullscreenchange',()=>{ if(!document.fullscreenElement) setTvMode(false); });
-  // Esc always exits TV mode — also covers the reload-restored case (no FS API state to Esc out of)
+
+  // only drop TV mode when REAL fullscreen that we entered is exited (a stray event at load
+  // must not wipe the restored layout / persisted flag)
+  let apiFsActive=false;
+  document.addEventListener('fullscreenchange',()=>{
+    if(document.fullscreenElement) apiFsActive=true;
+    else if(apiFsActive){ apiFsActive=false; setTvMode(false); }
+  });
+  // Esc exits TV mode (covers the reload-restored case where there's no FS API state)
   document.addEventListener('keydown',e=>{
     if(e.key==='Escape'){ if(document.fullscreenElement) document.exitFullscreen?.(); setTvMode(false); }
   });
-  // restore the TV layout after an auto-reload
-  try{ if(localStorage.getItem('bo_tv')) setTvMode(true); }catch(e){}
+  // unlock audio on the first user interaction so the ad has sound even when windowed
+  const unlockAudio=()=>{ const c=audioCtx(); if(c&&c.state==='suspended') c.resume().catch(()=>{}); };
+  document.addEventListener('pointerdown',unlockAudio); document.addEventListener('keydown',unlockAudio);
+
+  // ── on load: run ads where allowed, and restore TV mode ──
+  // A reload (incl. the auto-update) drops real fullscreen, and browsers WON'T re-enter it
+  // without a user gesture — so we re-apply the dense LAYOUT immediately and re-enter real
+  // fullscreen on the next tap/key. For a hands-free always-on TV, open ?tv=1 in a browser
+  // already in kiosk / F11 OS-fullscreen (a reload won't exit that).
+  function armFsRecovery(){
+    const h=()=>{ goFullscreen(); document.removeEventListener('pointerdown',h); document.removeEventListener('keydown',h); };
+    document.addEventListener('pointerdown',h); document.addEventListener('keydown',h);
+  }
+  syncAds();
+  window.addEventListener('resize',syncAds);
+
+  // hide the cursor after 30s of no mouse/key activity; any movement brings it back
+  let cursorTimer=null;
+  function pokeCursor(){
+    document.body.classList.remove('cursor-hidden');
+    clearTimeout(cursorTimer);
+    cursorTimer=setTimeout(()=>document.body.classList.add('cursor-hidden'),30000);
+  }
+  ['mousemove','pointerdown','keydown','wheel'].forEach(ev=>document.addEventListener(ev,pokeCursor,{passive:true}));
+  pokeCursor();
+  try{
+    const wantTv = /[?&]tv=1(\b|&|$)/.test(location.search) || location.hash==='#tv' || localStorage.getItem('bo_tv');
+    if(wantTv){ setTvMode(true); armFsRecovery(); }
+  }catch(e){}
 </script>
 </body>
 </html>

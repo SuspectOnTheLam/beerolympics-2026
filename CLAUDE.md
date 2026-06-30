@@ -87,12 +87,22 @@ when the lead changes hands, and the theme cross-fades. Idle flourishes: bobbing
 pulsing trophies + LEADING tag + winning-board ring, and a gently bobbing canoe. All
 motion is gated behind `prefers-reduced-motion`.
 
-## Full-screen ad (deer.supply)
+## deer.supply ad — 8-bit video segment
 
-In **full-screen mode only**, a `deer.supply` sponsor ad (fictional GLP-1 weight-loss
-brand) overlays the screen **every 5 minutes for 30 seconds** (`AD_EVERY` / `AD_DUR`),
-with a live countdown. The scheduler starts on `fullscreenchange` (entering FS) and is
-cleared on exit, so the ad never shows in windowed/responsive mode.
+A `deer.supply` sponsor ad (a **fictional** GLP-1/triple-agonist "RETA-DEER™" weight-loss
+brand, shown for entertainment only — see disclaimers in the ad copy) overlays the screen
+**every 5 minutes for 30 seconds** (`AD_EVERY` / `AD_DUR`). It plays on **desktop
+regardless of fullscreen** (`syncAds()` runs the scheduler at desktop width; skipped on
+phone-width layouts), not only in TV mode.
+
+It's a **4-scene animated "video"** driven by a `requestAnimationFrame` timeline:
+intro (pixel-art 8-bit deer + logo) → hero transformation (an 8-bit person slims from a
+high BMI to healthy as a `BMI`/`MONTH 0→18`/progress bar advance) → crowd results
+(`24% BODY WEIGHT GONE*`, a dramatization of published retatrutide trial figures) → CTA.
+Sprites are real pixel art (deer rendered from a char matrix into a CSS grid; people are
+blocky CSS figures whose belly width animates via an `@property --belly` length). A Web
+Audio **chiptune** plays during the ad (unlocked on the first user gesture). Skippable by
+tap/space; auto-closes at 30s; CRT scanline + vignette overlay.
 
 ## Running locally
 
