@@ -679,6 +679,18 @@
   // design changes on its own. Waits out an active ad first. No manual version bumping.
   const DEPLOY_CHECK_MS = 60000;
   let deployTag = null;
+  // circuit breaker: if something (e.g. flapping ETags) tries to reload over and over,
+  // stop auto-reloading so the TV can't get stuck in a reload loop. Counts across reloads
+  // via sessionStorage (resets when the tab is closed/reopened).
+  function safeReload(){
+    try{
+      const now=Date.now();
+      const recent=(JSON.parse(sessionStorage.getItem('bo_rl')||'[]')).filter(t=>now-t<600000);
+      recent.push(now); sessionStorage.setItem('bo_rl',JSON.stringify(recent));
+      if(recent.length>6){ console.warn('[beerolympics] auto-reload paused: too many reloads in 10 min'); return; }
+    }catch(e){}
+    location.reload();
+  }
   async function checkForUpdate(){
     try{
       const res = await fetch(location.pathname+'?_v='+Date.now(),{method:'HEAD',cache:'no-store'});
@@ -688,7 +700,7 @@
       if(deployTag===null){ deployTag=tag; return; }          // first sample = running version
       if(tag!==deployTag){                                     // a new build is live
         if(typeof adShowing==='function' && adShowing()) window.__reloadPending=true; // reload after the ad
-        else location.reload();
+        else safeReload();
       }
     }catch(e){ /* offline / transient — retry next tick */ }
   }
@@ -788,7 +800,7 @@
   function hideAd(){
     adEl().classList.remove('show'); clearTimeout(adTimeout); clearInterval(adTick);
     cancelAnimationFrame(adRAF); stopMusic();
-    if(window.__reloadPending) location.reload();
+    if(window.__reloadPending) safeReload();
   }
   // click / tap anywhere on the ad, or press space, to skip it
   adEl().addEventListener('click',()=>{ if(adShowing()) hideAd(); });
