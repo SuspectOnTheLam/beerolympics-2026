@@ -898,6 +898,21 @@
     ".BBBBBBBBBBB.",
     "..BBBBBBBBB..",
   ];
+  const MUG_PAL={F:'#ffffff',B:'#f5a623',D:'#c77f00',G:'#ffe9b0'};
+  const MUG=[
+    "..FFFFFFFF...",
+    ".FFFFFFFFFF..",
+    ".FFFFFFFFF...",
+    ".BBBBBBBBB...",
+    ".BGBBBBBBBDD.",
+    ".BGBBBBBBBD.D",
+    ".BGBBBBBBBD.D",
+    ".BGBBBBBBBD.D",
+    ".BGBBBBBBBDD.",
+    ".BBBBBBBBBD..",
+    ".BBBBBBBBB...",
+    ".DDDDDDDDD...",
+  ];
   const SKULL_PAL={S:'#e8e0cc',K:'#141414'};
   const SKULL=[
     "..SSSSSSS..",
@@ -961,6 +976,7 @@
   const DEER_FINE='Dramatization based on published retatrutide clinical-trial data (a GLP-1 / GIP / glucagon receptor agonist; highest-dose participants lost roughly a quarter of their body weight over ~72 weeks). deer.supply & RETA-DEER™ are a FICTIONAL sponsor shown purely for entertainment — not a real product and not medical advice.';
   const JUSTIN_FINE="Justin's Slippery Throat™ is a FICTIONAL party sponsor shown purely for entertainment on Canada Day — not a real product. Please drink responsibly.";
   const BRIAN_FINE="A loving Beerolympics tribute to Brian, Team White's finest. Statistically the greatest — probably. All in good fun.";
+  const VIC_FINE="A heartfelt Beerolympics tribute to Vic, the beating heart of Team White. Numbers can't measure vibes — but we printed his anyway. We love you, Vic.";
   const YAVEXIT_FINE="A satirical Beerolympics referendum. Yavuz remains deeply beloved and is going absolutely nowhere. No actual votes will be counted. Paid for by Citizens for a Slightly Smaller White Team.";
   const PROP_FINE="A morale-boosting Beerolympics dispatch in vintage-poster style — all in good fun, and especially for you, Brian.";
   const CHINA_FINE="An absurdist Beerolympics interlude, not a geopolitical statement of any kind. China is #1 in this ad only.";
@@ -986,6 +1002,13 @@
              ()=>{ const s=playerScore('Brian'); return (s!=null?s:'∞')+' POINTS OF PURE HEAT'; },
              'MVP · UNANIMOUS','THE PRIDE OF WHITE','BOW TO BRIAN 👑'],
       cta:'ALL HAIL BRIAN', fine:BRIAN_FINE},
+
+    {kind:'card', bg:'dark', tune:'victory', sprite:MUG, pal:MUG_PAL, px:'clamp(9px,1.9vw,19px)',
+      accent:'#ffd23b', brand:'WE ❤ VIC', sub:'TEAM WHITE MVP',
+      lines:['THE PEOPLE\'S CHAMPION',
+             ()=>{ const s=playerScore('Vic'); return s!=null ? s+' POINTS OF PURE CLASS' : 'POINTS? COUNTLESS.'; },
+             'STEADY HANDS · STEADIER HEART','THE GLUE OF TEAM WHITE','VIC HAPPENS ONCE A GENERATION'],
+      cta:'WE LOVE YOU VIC 🍺', fine:VIC_FINE},
 
     {kind:'card', bg:'white', tune:'anthem', sprite:BALLOT, pal:BALLOT_PAL, px:'clamp(8px,1.7vw,17px)',
       accent:'#204a9c', brand:'YAVEXIT', sub:'A TEAM WHITE REFERENDUM',
